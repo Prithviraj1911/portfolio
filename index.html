@@ -126,7 +126,7 @@
             </ul>
           </div>
 
-          <figure class="card span-3 reveal" style="margin:0">
+          <figure class="card span-4 reveal" style="margin:0">
             <!--
               INTRO VIDEO, choose ONE:
               A) add assets/intro.mp4 (< 25 MB) and assets/intro-poster.jpg
@@ -135,7 +135,7 @@
                          allow="encrypted-media; picture-in-picture" allowfullscreen loading="lazy"></iframe>
             -->
             <div class="video-frame">
-              <video id="intro-video" controls preload="none" poster="assets/intro-poster.jpg">
+              <video id="intro-video" controls playsinline preload="metadata" poster="assets/intro-poster.jpg" aria-label="Introduction video">
                 <source src="assets/intro.mp4" type="video/mp4">
               </video>
               <div class="video-fallback" hidden>
@@ -144,10 +144,10 @@
                 <p>Coming soon</p>
               </div>
             </div>
-            <figcaption style="margin-top:12px;color:var(--text-3);font-size:.9rem">A short introduction: who I am and how I work.</figcaption>
+            <figcaption style="margin-top:12px;color:var(--text-3);font-size:.9rem">A 90-second introduction: who I am and how I work.</figcaption>
           </figure>
 
-          <div class="card span-3 reveal">
+          <div class="card span-2 reveal">
             <p class="kicker">How I work</p>
             <ul class="mini-list">
               <li><span>Start from the reader's task</span><b>01</b></li>
