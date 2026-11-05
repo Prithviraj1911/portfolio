@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI-assisted structured documentation: Paligo + Claude | Prithviraj Lahare</title>
+  <meta name="description" content="What happens when you treat an AI assistant as a production tool for structured content, and where the technical writer still has to decide.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Research</div>
+        <span class="tag">Research</span>
+        <h1>AI-assisted structured documentation: Paligo + Claude</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">What happens when you treat an AI assistant as a production tool for structured content, and where the technical writer still has to decide.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Based on documentation projects I led in 2026. Company names, product names, colleague names, and system identifiers have been removed. Time figures are measured or estimated from the work itself, as noted.</p>
+
+
+      <h2>Abstract</h2>
+      <p>Structured documentation platforms such as Paligo store content as DocBook XML. That structure makes reuse, translation, and multi-channel publishing possible, but it also makes cleanup, migration, and troubleshooting slow and error-prone when done by hand.</p>
+      <p>Across four studies in 2026, I used Claude (in chat, and as Claude Code inside VS Code) to transform migrated XML topics, triage publishing errors, and migrate legacy Markdown documentation sites into Paligo. The studies also covered the review governance that keeps AI-assisted changes safe.</p>
+      <div class="kpis">
+        <div class="kpi"><b>~6×</b><span>faster per-topic XML cleanup (15–30 → 2–5 min)</span></div>
+        <div class="kpi"><b>~20×</b><span>faster link-report triage (3–4 h → 10 min)</span></div>
+        <div class="kpi"><b>150</b><span>pages in the validated migration pipeline</span></div>
+        <div class="kpi"><b>470</b><span>source files inventoried for the next migration</span></div>
+      </div>
+      <p>The headline finding is not speed alone. <strong>An AI assistant is most valuable when the writer turns tacit rules into an explicit specification</strong>, then applies it in separate, reviewable passes. Judgment about technical accuracy, information architecture, and cross-reference targets stays with the writer.</p>
+
+      <h2>Research question</h2>
+      <p>The documentation team was consolidating several products into Paligo. Content arrived from two directions:</p>
+      <ul>
+        <li><strong>Earlier imports</strong> that landed in Paligo with legacy markup: Markdown admonition markers, image placeholders, plain ordered lists instead of procedures, and inconsistent namespaces.</li>
+        <li><strong>Legacy MkDocs sites</strong> still outside Paligo, with third-party macros, include snippets, and hundreds of unvalidated links.</li>
+      </ul>
+      <p>The question was practical: <em>which parts of this work can an AI assistant do reliably, how much time does that save, and what process keeps the output trustworthy?</em></p>
+
+      <h2>Environment and toolchain</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Layer</th><th>Tool</th><th>Role in the research</th></tr></thead>
+          <tbody>
+            <tr><td>CCMS</td><td>Paligo (DocBook 5 XML)</td><td>Target platform: topics, publications, reuse, branching, Debug publish</td></tr>
+            <tr><td>Reasoning and transformation</td><td>Claude (chat)</td><td>Rule-driven XML transforms, report classification, include-chain tracing</td></tr>
+            <tr><td>Execution</td><td>Claude Code in VS Code</td><td>Ran converter scripts against local files, read manifests, diagnosed failures</td></tr>
+            <tr><td>Conversion</td><td>Python (scraper, navigation parser, DocBook package builder)</td><td>Markdown → DocBook packages that Paligo imports natively</td></tr>
+            <tr><td>Automation</td><td>Paligo REST API</td><td>Inventory audits and in-place image replacement</td></tr>
+            <tr><td>Style authorities</td><td>Google developer documentation style guide, company voice and tone, DocBook conventions</td><td>Encoded into the persistent prompt</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Method</h2>
+      <h3>1. A persistent prompt as a specification</h3>
+      <p>Instead of instructing Claude topic by topic, I wrote one standing project prompt with three rule groups: <strong>structural transforms</strong>, <strong>style rules</strong>, and <strong>table and image rules</strong>. Every topic in the session was processed against the same specification, so the twentieth topic got the same treatment as the first.</p>
+      <h3>2. Separate passes by dependency</h3>
+      <p>Changes with different dependencies were never mixed. Structural cleanup came first, cross-references second, and glossary wiring last, once the publication structure existed. Each pass was small enough to review on its own.</p>
+      <h3>3. Specific input, specific output</h3>
+      <p>Claude always received the raw source, such as XML from Paligo's source view or the full debug report as text, never a paraphrase. It returned paste-ready XML plus a short change summary, so review could focus on what changed.</p>
+      <h3>4. Human-in-the-loop review</h3>
+      <p>Every AI-produced change was reviewed by a writer before going back into Paligo. Large edits went through a branch and merge review (Study 4).</p>
+      <h3>5. Measurement</h3>
+      <p>Per-topic times compare manual cleanup estimates from the same content against timed AI-assisted cycles (paste, review, reinsert). Counts such as links, pages, and images come from reports and build manifests.</p>
+
+      <h2>Study 1: XML transformation at scale</h2>
+      <p><strong>Problem.</strong> Hundreds of migrated topics needed the same family of fixes, at 15–30 minutes each by hand, with a real risk of malformed XML breaking publishing.</p>
+      <p><strong>Approach.</strong> The persistent prompt encoded:</p>
+      <ul>
+        <li><code>&lt;literal&gt;</code> → <code>&lt;code&gt;</code>; <code>&lt;orderedlist&gt;</code> → <code>&lt;procedure&gt;</code>/<code>&lt;step&gt;</code></li>
+        <li>Legacy <code>!!! note</code>, <code>!!! tip</code>, and <code>!!! warning</code> markers → DocBook admonitions</li>
+        <li>Image placeholders → <code>&lt;mediaobject&gt;</code>; inline table icons → <code>&lt;inlinemediaobject&gt;</code></li>
+        <li>Style: sentence-case headings, present tense, second person, no "please," "click" not "click on"</li>
+      </ul>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Topics processed</td><td>50+ across user guide, how-to, and reference sections</td></tr>
+            <tr><td>Effort per topic</td><td>15–30 min manual → 2–5 min AI-assisted</td></tr>
+            <tr><td>Structural XML errors introduced</td><td>Near zero</td></tr>
+            <tr><td>Publication-blocking SVG icons fixed</td><td>8 (missing <code>xmlns</code>), re-uploaded in place so references stayed intact</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Full write-up: <a href="claude-xml-workflow.html">How Claude transformed a Paligo XML workflow</a>.</p>
+
+      <h2>Study 2: Broken-link triage</h2>
+      <p><strong>Problem.</strong> A Debug publish flagged 222 links across 30+ topics. Many were false positives caused by publishing a subpublication on its own, and real issues often sat three or four include levels below the topic the report named.</p>
+      <p><strong>Approach.</strong> Classify first, investigate second, fix last. Claude sorted the report by link type, then traced <code>xi:include</code> chains in the raw XML to the real source topic and decided whether each flag was real.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Category</th><th>Count</th><th>Decision</th></tr></thead>
+          <tbody>
+            <tr><td>UUID links</td><td>3 unique</td><td>Investigate first; traced and confirmed as false positives</td></tr>
+            <tr><td>Image links</td><td>~40</td><td>Verify against the media library</td></tr>
+            <tr><td>Glossary links</td><td>~15</td><td>Defer to the glossary pass</td></tr>
+            <tr><td>HTML path links</td><td>~160</td><td>Publication-scope false positives</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>Classification time fell from 3–4 hours to about 10 minutes, and tracing a link through nested includes from 30–45 minutes to 5–10. The bigger win was avoiding edits to links that were never broken. Full write-up: <a href="broken-link-triage.html">Fixing broken links using Claude</a>.</p>
+
+      <h2>Study 3: Markdown to Paligo migration</h2>
+      <p><strong>Problem.</strong> Legacy MkDocs sites needed to move into Paligo without waiting for the official pipeline's scripts and repository access.</p>
+      <p><strong>Approach.</strong> I built an independent pipeline that produces DocBook compatible with the official one, and ran it through Claude Code in VS Code:</p>
+      <ol>
+        <li><strong>Source:</strong> the MkDocs repository (preferred) or a scrape of the live site.</li>
+        <li><strong>Navigation:</strong> parse the site's real navigation into a nesting structure.</li>
+        <li><strong>Conversion:</strong> build DocBook 5 packages, with admonitions, procedures, substeps, keycaps, tabs, and images mapped to native elements.</li>
+        <li><strong>Gate:</strong> a build manifest with zero failures and a pre-import checklist (Max folder levels, target folder, no duplicate imports).</li>
+        <li><strong>Verify:</strong> spot-check a table, a procedure, an admonition, and an inline image.</li>
+      </ol>
+      <p><strong>Validation.</strong> A full 150-page migration of real product content imported with correct nesting and formatting.</p>
+      <p><strong>Scale-up.</strong> Before converting a larger legacy catalog, I inventoried its Markdown source:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Inventory finding</th><th>Consequence</th></tr></thead>
+          <tbody>
+            <tr><td>470 Markdown files: 153 active, 316 archived</td><td>Scope fixed to the active set; earlier estimates were off by about 13 pages each way</td></tr>
+            <tr><td>182 of 715 images orphaned</td><td>Only the 533 referenced images were carried over</td></tr>
+            <tr><td>A lightbox macro carried 532 of 576 image references (92%)</td><td>The converter handles the macro directly</td></tr>
+            <tr><td>296 site-root links had never been validated</td><td>Explicit link handling built into the converter</td></tr>
+            <tr><td>15 near-identical "pointer stub" pages</td><td>Handled as a group, with shared reuse components for licensing and support text</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The final build delivered 140 pages, split by section to stay under the import size limit, with a taxonomy assignment for every topic and a redirect map covering every legacy URL. A small API script replaced logo images in place, keeping each image ID so no topic reference broke.</p>
+      <p>Full guides: <a href="markdown-to-paligo-migration.html">Migrating MkDocs content to Paligo</a> and <a href="claude-code-vscode.html">Using Claude Code in VS Code</a>.</p>
+
+      <h2>Study 4: Review governance with branching</h2>
+      <p>Faster changes need a safer review path. I wrote the team's Paligo branching guide so that AI-assisted and manual edits follow the same controls:</p>
+      <ul>
+        <li>One branch per change request, labeled with its ticket number.</li>
+        <li>Work stays in the branch; the published topic stays untouched.</li>
+        <li>The reviewer, not the author, merges, after checking the change against the ticket.</li>
+        <li>Merge previews are reviewed change by change; unused branches are deleted.</li>
+      </ul>
+      <p>Full guide: <a href="paligo-branching.html">Paligo branching: tips and tricks</a>.</p>
+
+      <h2>Findings</h2>
+      <ol>
+        <li><strong>Consistency beats speed.</strong> The biggest benefit is that every topic gets identical treatment, whatever its complexity, or the writer's fatigue or time of day.</li>
+        <li><strong>Write the rules down.</strong> The prompt is a specification. Making tacit style and markup rules explicit improved the output and also documented the team's standards.</li>
+        <li><strong>Separate passes by dependency.</strong> Mixing structure, links, and glossary work multiplies failure modes; separating them keeps each review small.</li>
+        <li><strong>Raw source in, paste-ready output back.</strong> Specific XML gets specific answers; paraphrased descriptions get generic ones.</li>
+        <li><strong>Triage before repair.</strong> In error reports, most of the volume can be noise. Classifying first prevents unnecessary edits.</li>
+        <li><strong>Inventory before migration.</strong> A source audit is the cheapest risk assessment. Every surprise it found would otherwise have appeared as broken output.</li>
+        <li><strong>Preserve identity.</strong> Replacing assets in place (same ID) rather than re-uploading keeps every reference intact.</li>
+      </ol>
+
+      <h2>Limitations</h2>
+      <ul>
+        <li>Claude can't judge whether well-formed content is technically or architecturally correct.</li>
+        <li>It can't reliably choose a new cross-reference target when the correct one is unknown.</li>
+        <li>It doesn't make content strategy decisions: scope, information architecture, or reorganization.</li>
+        <li>Claude Code can't operate the Paligo browser UI; imports and publishes stay manual, with Claude guiding.</li>
+        <li>Manual-time baselines are estimates from the same content, not a controlled experiment.</li>
+        <li>Credentials must stay in environment variables, never in prompts, files, or scripts.</li>
+      </ul>
+
+      <h2>Playbook for teams</h2>
+      <ol>
+        <li>Write a persistent prompt that encodes your style guide, voice, and markup conventions. Share it as a team library.</li>
+        <li>Split work into passes: structure → cross-references → glossary.</li>
+        <li>Feed raw source; ask for paste-ready output and a change summary.</li>
+        <li>Triage error reports by category before investigating individual items.</li>
+        <li>Inventory any source before migrating it; gate imports on a zero-failure manifest.</li>
+        <li>Route changes through branches; the reviewer merges.</li>
+        <li>Measure before and after, so the value is visible to stakeholders.</li>
+      </ol>
+      <div class="callout"><strong>Bottom line:</strong> Claude was a force multiplier. It removed the mechanical burden so writing expertise could stay on accuracy, structure, and the reader.</div>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="../index.html#docs"><small>← Back</small>All documentation</a>
+          <a class="next" href="markdown-to-paligo-migration.html"><small>Next →</small>MkDocs to Paligo</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

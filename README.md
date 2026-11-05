@@ -6,7 +6,8 @@ A static portfolio site (plain HTML, CSS, and JavaScript, with no build step), r
 
 | Path | What it is |
 |---|---|
-| `index.html` | Home page: intro, video, AI research, experience, projects, skills, education, contact |
+| `index.html` | Home page: intro, about, AI research, documentation library, experience, skills, contact |
+| `docs/` | Full research write-up and guides, in a reading layout with table of contents |
 | `css/styles.css` | All styles, with light and dark modes |
 | `js/main.js` | Mobile menu, active-section highlighting, video and résumé fallbacks |
 | `assets/` | Avatar, intro video, résumé PDF |

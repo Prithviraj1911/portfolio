@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Using Claude Code in VS Code for a documentation migration | Prithviraj Lahare</title>
+  <meta name="description" content="Setting up and using Claude Code in VS Code to run a documentation migration.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Setup &amp; workflow</div>
+        <span class="tag">Setup &amp; workflow</span>
+        <h1>Using Claude Code in VS Code for a documentation migration</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">Setting up and using Claude Code in VS Code to run a documentation migration.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Originally written for a documentation team's internal knowledge base. Company names and system identifiers have been removed.</p>
+
+
+      <p>This guide explains how to set up Claude Code in VS Code and use it to run migration scripts, review results, and troubleshoot issues. It covers only the editor and Claude Code workflow; the companion guide explains what the scripts do.</p>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li><strong>VS Code 1.98.0 or later.</strong> Check <strong>Help &gt; About</strong>.</li>
+        <li><strong>A Claude plan that includes Claude Code</strong>: Pro, Max, Team, Enterprise, or an Anthropic Console account billed at API rates. The free plan doesn't include Claude Code.</li>
+        <li><strong>Windows:</strong> The standard installer needs no extra runtime. You need Node.js only for the npm-based install.</li>
+      </ul>
+
+      <h2>Setup</h2>
+      <h3>Step 1: Install Claude Code</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Option</th><th>When to use it</th><th>How</th></tr></thead>
+          <tbody>
+            <tr><td><strong>VS Code extension</strong></td><td>Recommended for this workflow</td><td>In <strong>Extensions</strong>, search for <strong>Claude Code</strong>, install it, and open the panel from the Claude icon in the sidebar.</td></tr>
+            <tr><td><strong>Command-line installer</strong></td><td>If you prefer the terminal</td><td>Run the installer in PowerShell, then verify the version.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <pre><code>irm https://claude.ai/install.ps1 | iex
+claude --version</code></pre>
+      <p>If you see "command not found," close and reopen the terminal: a terminal opened before installation doesn't see the updated PATH.</p>
+
+      <h3>Step 2: Authenticate</h3>
+      <p>The first time you open the Claude panel or run <code>claude</code>, your browser opens and asks you to sign in. Usage counts against your plan's limits, shared with the Claude chat interface.</p>
+
+      <h3>Step 3: Open your project folder</h3>
+      <p>Select <strong>File &gt; Open Folder</strong> and choose your working folder. Claude Code can read and edit only files inside that folder, so keep your scripts and source content there.</p>
+
+      <h2>Workflow</h2>
+      <h3>Step 4: Start with context</h3>
+      <p>Claude Code doesn't know what you discussed in another chat or changed outside the session. Start by summarizing:</p>
+      <ul>
+        <li>Your working folder path</li>
+        <li>What's already done (scraped pages, converted files, imported content)</li>
+        <li>Recently added or changed files and what they do</li>
+        <li>The next steps, in order</li>
+        <li>Standing rules, such as never hardcoding credentials</li>
+      </ul>
+      <div class="callout"><strong>Good practice:</strong> State constraints explicitly: use environment variables for credentials, don't touch unrelated files, and explain failures before retrying a large conversion run.</div>
+
+      <h3>Step 5: Approve actions</h3>
+      <p>Claude Code asks before writing files or running commands. You can approve once, allow similar edits for the session, or decline and redirect. Allowing edits for the session is efficient inside your own local folder; be more selective with external systems, imports, and credentials.</p>
+
+      <h3>Step 6: Review output and manifests</h3>
+      <p>Commands run in the integrated terminal, so you see the same output you'd see yourself. After each build step, check pages converted, pages failed, assets bundled, and warnings. If the numbers look wrong, ask Claude Code to explain the discrepancy before moving on.</p>
+
+      <h3>Step 7: Hand off between chat and the editor</h3>
+      <ol>
+        <li>Use Claude chat to think through an approach or debug a tricky issue.</li>
+        <li>Get back a working or revised file.</li>
+        <li>Paste a summary into Claude Code so it runs the solution against your real local files.</li>
+      </ol>
+      <p>Always restate the current state when you hand off: Claude Code can't see a separate chat conversation.</p>
+
+      <h2>A typical migration session</h2>
+      <ol>
+        <li>Confirm prerequisites: Python, required packages, and source content.</li>
+        <li>Ask Claude Code to run the conversion and report the manifest.</li>
+        <li>Review the manifest together; investigate any failure before re-running.</li>
+        <li>Decide whether Paligo cleanup is needed, such as deleting a previous test import.</li>
+        <li>Do the Paligo import in the browser yourself. Claude Code can guide you from your description or screenshots.</li>
+        <li>Spot-check a table, a procedure, an admonition, and an inline image.</li>
+      </ol>
+
+      <h2>Troubleshooting</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Issue</th><th>What to check</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td>Claude Code can't see a new file</td><td>The file may be outside the open folder, or in a similarly named one</td><td>Move it into the correct folder. A one-character difference in a folder name is enough to cause this.</td></tr>
+            <tr><td>A command works in one terminal but not another</td><td>Environment variables or new tools aren't loaded</td><td>Reopen the terminal panel or restart VS Code.</td></tr>
+            <tr><td>You want approval prompts back</td><td>"Allow all" lasts only for the session</td><td>Start a new conversation.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="markdown-to-paligo-migration.html"><small>← Previous</small>MkDocs to Paligo</a>
+          <a class="next" href="claude-xml-workflow.html"><small>Next →</small>Claude and Paligo XML</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

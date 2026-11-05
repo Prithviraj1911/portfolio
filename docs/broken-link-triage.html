@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Fixing broken links using Claude | Prithviraj Lahare</title>
+  <meta name="description" content="A triage-first workflow for using Claude to separate real broken links from false positives in a Paligo debug report.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Troubleshooting</div>
+        <span class="tag">Troubleshooting</span>
+        <h1>Fixing broken links using Claude</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">A triage-first workflow for using Claude to separate real broken links from false positives in a Paligo debug report.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Originally written for a documentation team's internal knowledge base. Resource IDs, UUIDs, and product names have been replaced with placeholders.</p>
+
+
+      <p>Broken-link cleanup in Paligo can become a slow investigation, especially when the debug report mixes real issues with false positives. This guide describes a workflow that uses Claude to speed up that work, reduce mistakes, and focus attention on links that actually need fixing.</p>
+
+      <h2>The problem</h2>
+      <p>A Paligo Debug publish can flag <strong>200+ links across 30+ topics</strong> in one publication. Investigating them by hand is slow and error-prone because of:</p>
+      <ul>
+        <li><strong>Volume:</strong> hundreds of links across dozens of topics.</li>
+        <li><strong>Hidden location:</strong> the report often points to a container topic, while the real issue sits in a child topic three or four include levels deep.</li>
+        <li><strong>False positives:</strong> Paligo flags cross-publication links when a subpublication is published on its own, and they look exactly like real errors.</li>
+      </ul>
+
+      <h2>How Claude helps</h2>
+      <ul>
+        <li><strong>Classification:</strong> sorts the report into glossary, image, HTML path, and UUID links.</li>
+        <li><strong>Traceability:</strong> follows <code>xi:include</code> chains through nested topics to the real source.</li>
+        <li><strong>Actionable fixes:</strong> decides real issue or false positive, and supplies corrected XML when needed.</li>
+      </ul>
+      <div class="split">
+        <div class="panel"><h3 style="margin-top:0">What you give Claude</h3><ul><li>The full broken-link report as text</li><li>The raw XML of a flagged topic, from Paligo's <code>&lt;/&gt;</code> source view</li><li>A clear question or task</li></ul></div>
+        <div class="panel"><h3 style="margin-top:0">What Claude gives back</h3><ul><li>A categorized, prioritized list</li><li>The exact line or topic to inspect</li><li>A verdict: false positive or real issue</li><li>Corrected XML when a fix is needed</li></ul></div>
+      </div>
+
+      <h2>Workflow</h2>
+      <ol>
+        <li><strong>Start with the full debug report.</strong> Ask Claude to classify every entry and suggest what to investigate first.</li>
+        <li><strong>Prioritize UUID links.</strong> They're few and most likely to be real reference issues.</li>
+        <li><strong>Set aside likely false positives.</strong> HTML path links in subpublication publishes are usually noise.</li>
+        <li><strong>Open the flagged topic's XML</strong> in Paligo's source view and paste it into Claude.</li>
+        <li><strong>Ask Claude to trace the issue.</strong> For a container topic, it identifies the include chain to the real source.</li>
+        <li><strong>Confirm whether the target exists.</strong> If a <code>urn:resource:component:</code> target exists, it's usually a cross-publication false positive.</li>
+        <li><strong>Fix only what's confirmed.</strong> Paste corrected XML back into Paligo only for real issues.</li>
+      </ol>
+
+      <h2>Prompts that worked</h2>
+      <p>Output quality depends on the prompt. Specific prompts with raw XML work much better than general descriptions.</p>
+
+      <h3>Prompt 1: Categorize the full report</h3>
+      <blockquote>Here is the full broken link report from a Paligo Debug publish. Categorize every broken link as: glossary, image link, HTML path, or UUID link. Tell me which ones to fix first and which to skip for now.</blockquote>
+      <p><strong>Result:</strong> all 222 links in one publication classified in one pass: about 15 glossary links deferred, about 40 image links flagged for media checks, about 160 HTML path links identified as likely false positives, and 3 unique UUID links prioritized.</p>
+
+      <h3>Prompt 2: Investigate a specific UUID link</h3>
+      <blockquote>This is the source XML of topic &lt;resource ID&gt; (&lt;topic title&gt;). The broken link report flags it for &lt;UUID&gt;. Find the broken link and tell me exactly what to fix. [paste XML]</blockquote>
+      <p><strong>Result:</strong> Claude identified the flagged topic as a container with no direct links, traced four levels of nested includes to the real source topic, confirmed the <code>urn:resource:component:</code> reference was correctly formed, and concluded it was a false positive. No fix needed.</p>
+
+      <h3>Prompt 3: Real issue or false positive?</h3>
+      <blockquote>The report flags this UUID: &lt;UUID&gt;. I found the topic in Paligo and it exists. The source uses xlink:href="urn:resource:component:&lt;id&gt;". Is this a real broken link or a cross-publication false positive?</blockquote>
+      <p><strong>Result:</strong> confirmed the URN format is correct for internal cross-references and that, with the target present, the report reflected publication scope, not a real break.</p>
+
+      <h2>What to fix first</h2>
+      <ol>
+        <li><strong>UUID links:</strong> few, and quick to validate as real or false.</li>
+        <li><strong>Image links:</strong> may mean missing or moved media.</li>
+        <li><strong>Glossary links:</strong> wait until the publication structure is stable.</li>
+        <li><strong>HTML path links:</strong> usually subpublication false positives.</li>
+      </ol>
+
+      <h2>Time saved</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Task</th><th>Without Claude</th><th>With Claude</th></tr></thead>
+          <tbody>
+            <tr><td>Categorize 222 broken links</td><td>3–4 hours</td><td>About 10 minutes</td></tr>
+            <tr><td>Trace a UUID link through nested includes</td><td>30–45 minutes per link</td><td>5–10 minutes</td></tr>
+            <tr><td>Decide false positive vs. real</td><td>Manual XML reading, easy to miss context</td><td>Near-instant explanation</td></tr>
+            <tr><td>Prepare corrected XML</td><td>Hand-written, risk of syntax errors</td><td>Exact replacement provided</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><strong>Outcome:</strong> Link investigation became a short triage-and-validate workflow. The biggest gain was avoiding edits to links that were never broken.</div>
+
+      <h2>Rules that make it work</h2>
+      <ul>
+        <li><strong>Publish from the parent publication</strong> when running a Debug publish; a standalone subpublication inflates the report.</li>
+        <li><strong>Give Claude raw XML</strong> from the source view. Specific input gets specific answers.</li>
+        <li><strong>Skip glossary links at first.</strong> Handle them in a separate pass.</li>
+        <li><strong>Don't edit valid <code>urn:resource:component:</code> links</strong> whose target exists.</li>
+      </ul>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="claude-xml-workflow.html"><small>← Previous</small>Claude and Paligo XML</a>
+          <a class="next" href="paligo-branching.html"><small>Next →</small>Paligo branching</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

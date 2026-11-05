@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Paligo branching: tips and tricks | Prithviraj Lahare</title>
+  <meta name="description" content="A team guide to branching and merging topics in Paligo.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Team guide</div>
+        <span class="tag">Team guide</span>
+        <h1>Paligo branching: tips and tricks</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">A team guide to branching and merging topics in Paligo.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Originally written for a documentation team's internal knowledge base. Team names have been removed.</p>
+
+
+      <p>Branching creates a connected copy of a topic or publication. Unlike a standard copy, the branch stays linked to the original, so you can compare versions and merge selected changes back later.</p>
+      <p>Think of a branch as a safe workspace: the main topic stays unchanged and publishable while edits, review feedback, and experiments happen in the branch.</p>
+      <div class="callout"><strong>Quick rule:</strong> Always include the ticket number in the branch label, for example <code>DOC-123 – Update tile config wording</code>.</div>
+
+      <h2>When to branch</h2>
+      <ul>
+        <li>Reviewing edits with an SME or peer before they go live</li>
+        <li>Testing a restructure or major rewrite without risking published content</li>
+        <li>Working on one change request in isolation</li>
+        <li>Managing parallel content for different releases or product variants</li>
+        <li>Supporting translation or localization in progress</li>
+      </ul>
+
+      <h2>Create a branch</h2>
+      <ol>
+        <li>In <strong>Content Manager</strong>, find the topic or publication.</li>
+        <li>Click the <strong>…</strong> menu next to it.</li>
+        <li>Select <strong>Branching &gt; New Branch</strong>.</li>
+        <li>Enter a branch label.</li>
+        <li>Optional: select <strong>Select location for new branch</strong> to store it in another folder.</li>
+        <li>Optional: select <strong>Open new branch in editor</strong> to start editing immediately.</li>
+        <li>Click <strong>Create</strong>.</li>
+      </ol>
+
+      <h2>Work in a branch</h2>
+      <ul>
+        <li>Edit the branch like any topic; the editor is the same.</li>
+        <li>The main topic stays untouched while you work.</li>
+        <li>You can have several branches of the same topic at once.</li>
+        <li>Use compare or preview to review differences before merging.</li>
+      </ul>
+
+      <h2>Merge a branch</h2>
+      <ol>
+        <li>Make sure the main topic and the branch are both checked in and set to <strong>Work in Progress</strong>.</li>
+        <li>Click the <strong>…</strong> menu on the branch to merge from.</li>
+        <li>Select <strong>Branching &gt; Merge Branch</strong>.</li>
+        <li>Choose the merge target, usually the main topic.</li>
+        <li>Optional: select <strong>Change release status and check in</strong>.</li>
+        <li>Review the differences: <strong>green</strong> shows additions, <strong>red</strong> shows deletions.</li>
+        <li>Accept or reject individual changes.</li>
+        <li>Click <strong>Preview</strong> to confirm the result, then <strong>Close</strong>.</li>
+        <li>Choose whether to delete the branch after merging.</li>
+        <li>Click <strong>Merge</strong>.</li>
+      </ol>
+
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Stage</th><th>What to check</th><th>Why it matters</th></tr></thead>
+          <tbody>
+            <tr><td>Before branching</td><td>A clear label with the ticket number</td><td>Ownership and purpose are easy to track</td></tr>
+            <tr><td>While editing</td><td>Work stays in the branch</td><td>Published content is protected</td></tr>
+            <tr><td>Before merging</td><td>Compare results reviewed carefully</td><td>Unintended edits don't go live</td></tr>
+            <tr><td>After merging</td><td>Unused branches deleted</td><td>Content Manager stays organized</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Tips</h2>
+      <ul>
+        <li>Keep branch structures simple; nested branches are hard to manage.</li>
+        <li>Update the label if the ticket scope or status changes.</li>
+        <li>Use branches for SME review so comments don't affect live content.</li>
+        <li><strong>One branch per change request</strong> keeps review, merge, and traceability predictable.</li>
+      </ul>
+
+      <h2>Who merges</h2>
+      <p>The person who created the branch doesn't merge it. The reviewer or approver does, after the final review. Before merging, the reviewer:</p>
+      <ol>
+        <li>Reads through the content changes in the branch.</li>
+        <li>Checks that the branch label references a ticket number.</li>
+        <li>Opens the ticket and confirms the requested change matches what was done.</li>
+        <li>Confirms the ticket status shows the change is approved and ready.</li>
+        <li>Only then merges the branch into main.</li>
+      </ol>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="broken-link-triage.html"><small>← Previous</small>Fixing broken links</a>
+          <a class="next" href="../index.html#docs"><small>Back to →</small>All documentation</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

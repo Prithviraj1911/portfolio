@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>How Claude transformed a Paligo XML documentation workflow | Prithviraj Lahare</title>
+  <meta name="description" content="How a persistent Claude prompt turned Paligo DocBook XML cleanup into a fast, consistent review-and-paste workflow.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Case study</div>
+        <span class="tag">Case study</span>
+        <h1>How Claude transformed a Paligo XML documentation workflow</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">How a persistent Claude prompt turned Paligo DocBook XML cleanup into a fast, consistent review-and-paste workflow.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Originally written for a documentation team's internal knowledge base. Company and product names and system identifiers have been removed.</p>
+
+
+      <h2>Overview</h2>
+      <p>This case study explains how Claude was used to clean up a SaaS product's documentation set in Paligo. Instead of applying the same XML and style corrections topic by topic, Claude applied one persistent ruleset to every topic in the session, turning repetitive cleanup into a fast review-and-paste process.</p>
+
+      <h2>The problem</h2>
+      <p>The documentation set is stored in Paligo as DocBook XML. It had been migrated from an earlier system and arrived with legacy markup, inconsistent formatting, and structural issues. That meant hundreds of topics across user guides, how-tos, reference pages, and release notes, most needing the same family of fixes, each still needing care because malformed XML can quietly break publishing.</p>
+      <ul>
+        <li><strong>Time-consuming:</strong> roughly 15–30 minutes per topic by hand</li>
+        <li><strong>Inconsistent:</strong> rules missed or applied differently between topics</li>
+        <li><strong>Low-value:</strong> repetitive transforms with little creative or strategic value</li>
+        <li><strong>Risky:</strong> malformed XML introduces hard-to-detect problems</li>
+      </ul>
+
+      <h2>Standards applied</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Authority</th><th>Key rules</th></tr></thead>
+          <tbody>
+            <tr><td>Google developer documentation style guide</td><td>Present tense, contractions, active voice, sentence-case headings, serial commas, "click" not "click on"</td></tr>
+            <tr><td>Company voice and tone</td><td>Second person, no "please" in instructions, plain English for global readers, American spelling</td></tr>
+            <tr><td>Paligo / DocBook conventions</td><td>Correct elements, namespace formatting, valid admonitions, Paligo-compatible tables and images</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>The prompt strategy</h2>
+      <p>Instead of one-off instructions per topic, I wrote a persistent project prompt that acted as a standing transformation specification:</p>
+      <ul>
+        <li><strong>Structural transforms:</strong> <code>&lt;literal&gt;</code> → <code>&lt;code&gt;</code>; <code>&lt;orderedlist&gt;</code> → <code>&lt;procedure&gt;</code>/<code>&lt;step&gt;</code>; legacy <code>!!! note</code> markers → DocBook admonitions; image placeholders → <code>&lt;mediaobject&gt;</code>; glossary placeholders flagged for a later pass; namespaces normalized.</li>
+        <li><strong>Style rules:</strong> sentence-case headings, present tense, contractions, no "please," "click" not "click on," active voice, plain English.</li>
+        <li><strong>Table rules:</strong> <code>informaltable</code> at 100% width with no <code>colgroup</code>; inline icons as <code>&lt;inlinemediaobject&gt;</code> inside <code>&lt;para&gt;</code>; UUID-based image references where required.</li>
+      </ul>
+      <div class="callout"><strong>Why it mattered:</strong> A persistent prompt turned Claude into a repeatable production tool rather than a one-off editing assistant.</div>
+
+      <h2>Execution: separate passes</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Pass</th><th>What it covered</th></tr></thead>
+          <tbody>
+            <tr><td>1. Structural cleanup</td><td>Element transforms, admonitions, image placeholders, namespace formatting</td></tr>
+            <tr><td>2. Cross-references</td><td>Internal Paligo links (<code>urn:resource:component:</code>), external links, path-based links</td></tr>
+            <tr><td>3. Glossary</td><td>Deferred replacement of glossary placeholders once the publication existed</td></tr>
+            <tr><td>Parallel: SVG fix</td><td>Bulk repair of icons missing the <code>xmlns</code> attribute, re-uploaded with Paligo Replace</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>I pasted raw XML into Claude, which returned transformed XML ready to paste back, plus a short summary of the changes so review could focus on what changed. Claude handled the mechanical layer; I stayed focused on technical correctness and publication intent.</p>
+
+      <h2>Before and after</h2>
+      <h3>Admonition</h3>
+      <div class="split">
+        <pre><code>!!! note The users and groups you create can be
+synchronized to all your sites automatically.</code></pre>
+        <pre><code>&lt;note&gt;
+  &lt;para&gt;The users and groups you create can be
+  synchronized to all your sites automatically.&lt;/para&gt;
+&lt;/note&gt;</code></pre>
+      </div>
+
+      <h3>Ordered list to procedure</h3>
+      <div class="split">
+        <pre><code>&lt;orderedlist numeration="arabic"&gt;
+  &lt;listitem&gt;
+    &lt;para&gt;Navigate to ADMIN &gt; Users &amp;amp; Groups.&lt;/para&gt;
+  &lt;/listitem&gt;
+&lt;/orderedlist&gt;</code></pre>
+        <pre><code>&lt;procedure&gt;
+  &lt;step&gt;
+    &lt;para&gt;Navigate to &lt;emphasis role="strong"&gt;ADMIN &amp;gt;
+    Users &amp;amp; Groups&lt;/emphasis&gt;.&lt;/para&gt;
+  &lt;/step&gt;
+&lt;/procedure&gt;</code></pre>
+      </div>
+
+      <h3>Image placeholder</h3>
+      <div class="split">
+        <pre><code>&lt;para&gt;@lb&lt;link xlink:href="img/delete-sessions.png"&gt;&lt;/link&gt;&lt;/para&gt;</code></pre>
+        <pre><code>&lt;mediaobject&gt;
+  &lt;imageobject&gt;
+    &lt;imagedata fileref="img/delete-sessions.png"/&gt;
+  &lt;/imageobject&gt;
+&lt;/mediaobject&gt;</code></pre>
+      </div>
+
+      <h3>SVG icon repair</h3>
+      <p>Eight dashboard icons failed to render because the root <code>svg</code> element lacked <code>xmlns</code>. A bulk find-and-replace fixed the files, and Paligo's <strong>Replace</strong> function re-uploaded them so every existing reference stayed intact.</p>
+      <pre><code>Search:  &lt;svg
+Replace: &lt;svg xmlns="http://www.w3.org/2000/svg"</code></pre>
+
+      <h2>Results</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Metric</th><th>Result</th></tr></thead>
+          <tbody>
+            <tr><td>Topics processed</td><td>50+ across user guide, how-to, and reference sections</td></tr>
+            <tr><td>Manual effort per topic</td><td>About 15–30 minutes</td></tr>
+            <tr><td>Claude-assisted effort per topic</td><td>About 2–5 minutes, including paste, review, and reinsert</td></tr>
+            <tr><td>Consistency</td><td>Rules applied uniformly to every topic</td></tr>
+            <tr><td>Structural XML errors</td><td>Near zero</td></tr>
+            <tr><td>Publication-blocking SVG icons fixed</td><td>8</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout"><strong>Key insight:</strong> The biggest benefit wasn't only speed. It was repeatable consistency, regardless of complexity, fatigue, or time of day.</div>
+
+      <h2>What Claude doesn't replace</h2>
+      <ul>
+        <li>Judging whether content is technically and architecturally correct</li>
+        <li>Choosing a new cross-reference target when the right one is unknown</li>
+        <li>SME and technical accuracy review</li>
+        <li>Content strategy: scope, information architecture, reorganization</li>
+      </ul>
+      <p>Claude was a force multiplier: it removed the mechanical burden so writing expertise stayed on quality, structure, and product knowledge.</p>
+
+      <h2>Recommendations</h2>
+      <ul>
+        <li>Use Claude for XML cleanup and transformation passes on new or migrated content.</li>
+        <li>Keep a shared prompt library so every writer applies the same rules.</li>
+        <li>Try Claude first for SVG and media troubleshooting before opening support tickets.</li>
+        <li>Keep cross-references and glossary work in separate passes.</li>
+      </ul>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="claude-code-vscode.html"><small>← Previous</small>Claude Code in VS Code</a>
+          <a class="next" href="broken-link-triage.html"><small>Next →</small>Fixing broken links</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>

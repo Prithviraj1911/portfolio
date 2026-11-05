@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Migrating MkDocs content to Paligo with a custom converter | Prithviraj Lahare</title>
+  <meta name="description" content="A process guide for migrating MkDocs documentation into Paligo using a custom DocBook converter.">
+  <meta name="theme-color" content="#5b4cf0">
+  <link rel="icon" href="../assets/avatar.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="progress" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <nav class="nav" aria-label="Primary">
+      <a class="brand" href="../index.html"><span class="brand-mark">PL</span>Prithviraj Lahare</a>
+      <ul id="nav-links" class="nav-links">
+        <li><a href="../index.html#research">Research</a></li>
+        <li><a href="../index.html#docs">Documentation</a></li>
+        <li><a href="../index.html#experience">Experience</a></li>
+        <li><a href="../index.html#contact">Contact</a></li>
+      </ul>
+      <div class="nav-actions">
+        <button class="icon-btn theme-toggle" type="button" aria-label="Switch theme">☾</button>
+        <a class="nav-cta" href="../index.html#contact">Hire me</a>
+        <button class="icon-btn nav-toggle" type="button" aria-expanded="false" aria-controls="nav-links" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="doc-hero">
+      <div class="container">
+        <div class="crumbs"><a href="../index.html">Home</a> / <a href="../index.html#docs">Documentation</a> / Process guide</div>
+        <span class="tag">Process guide</span>
+        <h1>Migrating MkDocs content to Paligo with a custom converter</h1>
+        <p style="color:var(--text-2);font-size:1.12rem;max-width:44em;margin:0">A process guide for migrating MkDocs documentation into Paligo using a custom DocBook converter.</p>
+        <div class="doc-meta"><span>By Prithviraj Lahare</span><span>2026</span><span class="reading-time"></span></div>
+      </div>
+    </section>
+
+    <div class="container doc-layout">
+      <aside class="toc" aria-label="On this page"><p>On this page</p><ol></ol></aside>
+      <article class="prose">
+        <p class="note">Originally written for a documentation team's internal knowledge base. Company names, colleague names, and system identifiers have been removed.</p>
+
+
+      <p><strong>Scope:</strong> This process works for any MkDocs-based documentation set that needs to move into Paligo. It runs in parallel to an official migration pipeline: use it when you have the MkDocs source (or only the live site) but not the official converter scripts, or when you need to iterate on conversion logic yourself.</p>
+
+      <h2>Why this process exists</h2>
+      <p>Paligo is the target platform for the team's structured documentation. Content that lives as MkDocs Markdown on a separate static site needs to move into Paligo to gain consistent authoring, reuse, translation workflows, and one place for writers to work.</p>
+      <p>The official pipeline depends on scripts and repository access that can take time to arrange. This process gives writers an independent path to real content in Paligo, using the same DocBook conventions so both approaches produce compatible results.</p>
+
+      <h2>What you get</h2>
+      <p>Real content imported into Paligo as a Publication with Topics, nested to match the source site's navigation, with images displaying correctly and procedures, notes, tips, warnings, and tables converted to native structured elements.</p>
+      <div class="callout"><strong>What you don't get:</strong> Paligo reuse components. If the source shares content through an include directive, this process inlines that content into every page that uses it. The content is complete and correct, but duplicated rather than linked. Revisit it with the official pipeline's transclusion wiring if reuse matters.</div>
+
+      <h2>Prerequisites</h2>
+      <ul>
+        <li>Python 3 with <code>pip</code> available. Run <code>python --version</code> to confirm.</li>
+        <li>Access to the source content, either:
+          <ul>
+            <li>The MkDocs source folder (preferred, because it preserves the real source syntax), or</li>
+            <li>The live rendered site's base URL and navigation structure, to scrape as a fallback.</li>
+          </ul>
+        </li>
+        <li>A Paligo account with import permissions.</li>
+        <li>A personal Paligo API key, only if you script anything beyond the import UI.</li>
+        <li>The converter scripts: a scraper (only if scraping), a navigation parser, and the DocBook package builder.</li>
+      </ul>
+
+      <h2>A note on credentials</h2>
+      <p>Never hardcode a Paligo API token, user name, or password in a script or file. Set them as environment variables for the current terminal session instead:</p>
+      <pre><code>$env:PALIGO_INSTANCE = "your-instance-name"
+$env:PALIGO_USER     = "your.email@example.com"
+$env:PALIGO_TOKEN    = "your-api-token"</code></pre>
+      <p>These variables disappear when you close the window. If a token is ever exposed, regenerate it in Paligo immediately.</p>
+
+      <h2>Run the conversion</h2>
+      <h3>Step 1: Set up your working folder</h3>
+      <p>Create one folder, for example <code>C:\doc-migration</code>, and put the three scripts in it. Run all commands from this folder.</p>
+
+      <h3>Step 2: Get the source content</h3>
+      <p><strong>Option A: You have the MkDocs repository.</strong> Clone or extract it into the working folder so the <code>.md</code> files sit under their top-level area folders.</p>
+      <p><strong>Option B: You only have the live site.</strong> Install the scraper's dependencies and run it:</p>
+      <pre><code>python -m pip install requests beautifulsoup4 markdownify
+python scrape_docs.py</code></pre>
+      <p>Check the scrape manifest to confirm zero missing pages or images. Option A converts more accurately, because it keeps syntax such as admonitions and includes that an HTML scrape can only approximate.</p>
+
+      <h3>Step 3: Build the navigation structure</h3>
+      <pre><code>python -m pip install markdown beautifulsoup4 pymdown-extensions
+python parse_toc.py</code></pre>
+      <p>This turns the site's indented navigation list into a structured file the converter uses for nesting. Confirm the reported page count matches what you expect.</p>
+
+      <h3>Step 4: Convert to DocBook packages</h3>
+      <pre><code>python build_docbook_packages.py --docs &lt;source-folder&gt; --out paligo_import --combine</code></pre>
+      <p><code>--combine</code> produces one file with everything nested correctly. Omit it to get one <code>.zip</code> per top-level area, which is useful for importing and checking a small area first.</p>
+      <p>Then open <code>paligo_import\build-manifest.txt</code> and confirm every page converted with zero failures. Any failure is listed with its reason.</p>
+
+      <h2>Before you import: checklist</h2>
+      <p>Most import problems come from skipping one of these checks, not from the conversion itself.</p>
+      <ul class="checklist">
+        <li>The build manifest shows zero failed pages.</li>
+        <li>You know the deepest nesting level in your content, and will set <strong>Max folder levels</strong> higher than it.</li>
+        <li>You have confirmed the target folder in Paligo.</li>
+        <li>You have removed any previous test import of the same content. Reimporting creates duplicates; it doesn't update topics.</li>
+        <li>Your Paligo credentials are current and not exposed.</li>
+        <li>You've chosen which pages to spot-check: a table, a numbered procedure, a note or warning, and an inline image.</li>
+      </ul>
+
+      <h2>Import into Paligo</h2>
+      <ol>
+        <li>In Paligo, right-click the target folder and select <strong>Import content</strong>.</li>
+        <li>Select the import type <strong>Docbook 5 (.xml)</strong>.</li>
+        <li>Click <strong>Select file</strong> and choose your <code>.zip</code> file.</li>
+        <li>On the <strong>Custom options</strong> tab, set <strong>Max folder levels</strong> to the value from the checklist.</li>
+        <li>Leave <strong>Folder numbering</strong> set to <strong>Enable</strong> if you want generated numbering such as 1.1 and 1.2.</li>
+        <li>Click <strong>Ok</strong>. Large combined imports can take several minutes.</li>
+      </ol>
+      <div class="callout"><strong>Important:</strong> If Max folder levels is too low, Paligo can silently drop the deepest topics. Set it higher than you think you need; there's no downside.</div>
+
+      <h2>Verify the import</h2>
+      <ul>
+        <li>Pages nest under the correct parent, matching the source navigation.</li>
+        <li>Numbered procedures render as real steps, not plain paragraphs.</li>
+        <li>Notes, tips, and warnings render as distinct boxes, including inside a step.</li>
+        <li>Images display, including inline images in sentences, list items, and table cells.</li>
+      </ul>
+
+      <h2>Clean up before re-running</h2>
+      <p>Delete the previous import's topics before importing again. If Paligo won't delete a topic, it's probably referenced elsewhere. Check its metadata for <strong>Reused here</strong> or <strong>Used in</strong>, remove those references, and try again.</p>
+
+      <h2>Source syntax the converter handles</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Source syntax</th><th>How it converts</th></tr></thead>
+          <tbody>
+            <tr><td><code>!!! note</code>, <code>!!! tip "Title"</code></td><td>Matching DocBook admonition (<code>&lt;note&gt;</code>, <code>&lt;tip&gt;</code>, <code>&lt;warning&gt;</code>, …) with the custom title when present.</td></tr>
+            <tr><td><code>{% include "./_file.md" %}</code></td><td>Snippet content is inlined into the page.</td></tr>
+            <tr><td>Lightbox image macro</td><td>Standard image, bundled into the package and referenced correctly.</td></tr>
+            <tr><td>Glossary macro</td><td>Display text only; glossary auto-linking isn't implemented.</td></tr>
+            <tr><td>Numbered lists</td><td><code>&lt;procedure&gt;</code> and <code>&lt;step&gt;</code>; nested numbered lists become <code>&lt;substeps&gt;</code>.</td></tr>
+            <tr><td><code>=== "Tab name"</code></td><td>Separate subsections headed by the tab name. Tab behavior is lost, but all content remains.</td></tr>
+            <tr><td><code>++key++</code></td><td><code>&lt;keycap&gt;</code>.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Troubleshooting</h2>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Symptom</th><th>What to do</th></tr></thead>
+          <tbody>
+            <tr><td><code>python</code> isn't recognized</td><td>Reinstall Python with "Add to PATH" selected, then reopen the terminal.</td></tr>
+            <tr><td>Missing module error</td><td>Run <code>python -m pip install &lt;package&gt;</code>.</td></tr>
+            <tr><td>Pages failed in the manifest</td><td>Check the reason beside each page: usually a missing snippet, malformed syntax, or a converter bug.</td></tr>
+            <tr><td>Deepest topics are missing after import</td><td>Raise Max folder levels and import again.</td></tr>
+            <tr><td>A topic can't be deleted</td><td>Remove its reuse references first.</td></tr>
+            <tr><td>Something was deleted by mistake</td><td>Open <strong>Trash</strong> in Content Manager and select <strong>Put back</strong>, or drag the item back into a folder.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>Applying it at scale: inventory before you convert</h2>
+      <p>After validating the process on 150 pages, I applied it to a much larger legacy catalog of product plugin documentation. Before converting anything, I inventoried the Markdown source rather than the rendered site. The inventory changed the plan:</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Finding</th><th>Why it mattered</th></tr></thead>
+          <tbody>
+            <tr><td>470 Markdown files: 153 active, 316 archived</td><td>Earlier estimates were off by about 13 pages in each direction. Only the active set needed migrating.</td></tr>
+            <tr><td>182 of 715 images under active pages were orphaned</td><td>Unreferenced images were left behind instead of polluting the new media library; 533 were carried over.</td></tr>
+            <tr><td>A third-party lightbox macro carried 532 of 576 image references (92%)</td><td>The converter had to handle the macro itself; standard Markdown images were a rounding error.</td></tr>
+            <tr><td>296 site-root absolute links had never been validated</td><td>The source site's build ignored them, so every one needed explicit handling in the converter.</td></tr>
+            <tr><td>15 "pointer stub" pages were near-identical boilerplate</td><td>They could be handled as one group, and later replaced by shared reuse components.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>The final build delivered 140 pages as DocBook packages, split by section to stay under the import size limit, with a taxonomy assignment for every topic and a redirect map covering every legacy URL. A small API script then replaced logo images in place, keeping each image's ID so no topic reference broke.</p>
+      <div class="callout"><strong>Finding:</strong> A source inventory is the cheapest risk assessment in a migration. Every surprise above would otherwise have shown up as broken output after import.</div>
+
+        <nav class="doc-nav" aria-label="More documentation">
+          <a href="ai-structured-documentation-research.html"><small>← Previous</small>Research</a>
+          <a class="next" href="claude-code-vscode.html"><small>Next →</small>Claude Code in VS Code</a>
+        </nav>
+      </article>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>© <span id="year">2026</span> Prithviraj Lahare</p>
+      <a href="../index.html">Back to portfolio ↑</a>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+</body>
+</html>
