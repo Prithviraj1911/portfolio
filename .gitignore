@@ -1,0 +1,7 @@
+# Internal or confidential material. Never commit or publish.
+private/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
